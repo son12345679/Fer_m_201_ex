@@ -1,108 +1,186 @@
-import React from 'react';
-import { Card, CardImg, CardText, CardBody,
-  CardTitle, Breadcrumb, BreadcrumbItem } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react"
+import { Link } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import { addComment } from "../redux/commentsSlice"
 
-import { Card, CardImg, CardText, CardBody,
-    CardTitle } from 'reactstrap';
-    function RenderDish({dish}) {
-    super(props);
-    this.state = {
-      selectedDish: null,
-    };
-    
-  
+import {
+	Card,
+	CardImg,
+	CardText,
+	CardBody,
+	CardTitle,
+	Breadcrumb,
+	BreadcrumbItem,
+	Button,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Label,
+} from "reactstrap"
+import { Formik, ErrorMessage, Form, Field } from "formik"
 
-    this.setState({ selectedDish: dish });
-  
+import Loader from "./LoadingComponent"
 
+const DishDetail = ({ selectedDish, comments }) => {
+	const [showModal, setShowModal] = useState(false)
+	const dispatch = useDispatch()
+	const { isLoading, errMess } = useSelector((state) => state.dishes)
 
-    if (dish != null)
-    return (
-      <div className="container">
-      <div className="row">
-          <Breadcrumb>
+	function validate(values) {
+		const errors = {}
+		if (values.name && values.name.length < 3)
+			errors.name = "Must be greater than 2 characters"
+		else if (values.name && values.name.length > 15)
+			errors.name = "Must be 15 character or less"
 
-              <BreadcrumbItem><Link to="/menu">Menu</Link></BreadcrumbItem>
-              <BreadcrumbItem active>{props.dish.name}</BreadcrumbItem>
-          </Breadcrumb>
-          <div className="col-12">
-              <h3>{props.dish.name}</h3>
-              <hr />
-          </div>                
-      </div>
-      <div className="row">
-          <div className="col-12 col-md-5 m-1">
-              <RenderDish dish={props.dish} />
-          </div>
-          <div className="col-12 col-md-5 m-1">
-              <RenderComments comments={props.comments} />
-          </div>
-      </div>
-      </div>
-  );
+		return errors
+	}
 
-    else return <div></div>;
-  
+	if (isLoading)
+		return (
+			<div className="container">
+				<div className="row">
+					<Loader />
+				</div>
+			</div>
+		)
+
+	if (errMess)
+		return (
+			<div className="container">
+				<div className="row">{errMess}</div>
+			</div>
+		)
+
+	return (
+		<div className="container">
+			<div className="row">
+				<Breadcrumb>
+					<BreadcrumbItem>
+						<Link to="/home">Home</Link>
+					</BreadcrumbItem>
+					<BreadcrumbItem>
+						<Link to="/menu">Menu</Link>
+					</BreadcrumbItem>
+					<BreadcrumbItem active>{selectedDish.name}</BreadcrumbItem>
+				</Breadcrumb>
+				<div className="col-12">
+					<h3>{selectedDish.name}</h3>
+					<hr />
+				</div>
+			</div>
+			<div className="row">
+				<div className="col-12 col-md-5 m-1">
+					<Card>
+						<CardImg
+							width="100%"
+							src={selectedDish.image}
+							alt={selectedDish.name}
+						/>
+						<CardBody>
+							<CardTitle>{selectedDish.name}</CardTitle>
+							<CardText>{selectedDish.description}</CardText>
+						</CardBody>
+					</Card>
+				</div>
+				<div className="col-12 col-md-5 m-1">
+					<h4>Comments</h4>
+					{comments.map((comment) => {
+						return (
+							<div key={comment.id} className="my-2">
+								<p>{comment.comment}</p>
+								<p>
+									{"-- "}
+									{comment.author}
+									{" , "}
+									{new Date(comment.date).toLocaleDateString(
+										"en-US",
+										{
+											year: "numeric",
+											month: "short",
+											day: "numeric",
+										}
+									)}
+								</p>
+							</div>
+						)
+					})}
+					<Button
+						outline
+						color="secondary"
+						onClick={() => setShowModal(!showModal)}>
+						<span className="fa fa-pencil"></span> Submit Comment
+					</Button>
+				</div>
+			</div>
+			<Modal
+				scrollable
+				isOpen={showModal}
+				toggle={() => setShowModal(!showModal)}>
+				<ModalHeader toggle={() => setShowModal(!showModal)}>
+					Submit Comment
+				</ModalHeader>
+				<ModalBody>
+					<Formik
+						initialValues={{
+							rating: "1",
+							name: "",
+							message: "",
+						}}
+						validate={validate}
+						onSubmit={(values, actions) => {
+							dispatch(
+								addComment({
+									dishId: selectedDish.id,
+									rating: values.rating,
+									author: values.name,
+									comment: values.message,
+								})
+							)
+							console.log(
+								"Current state is: " + JSON.stringify(values)
+							)
+							actions.setSubmitting(false)
+						}}>
+						<Form>
+							<Label htmlFor="rating">Rating</Label>
+							<Field
+								type="number"
+								name="rating"
+								min="0"
+								max="5"
+								className="form-control"
+							/>
+							<Label htmlFor="name">Name</Label>
+							<Field name="name" className="form-control" />
+							<ErrorMessage
+								name="name"
+								component="div"
+								className="text-danger"
+							/>
+
+							<Label htmlFor="message">Comment</Label>
+							<Field
+								as="textarea"
+								name="message"
+								rows="4"
+								className="form-control"
+							/>
+
+							<Button
+								type="submit"
+								color="primary"
+								onClick={() => setShowModal(!showModal)}
+                style={{marginTop: "20px"}}
+                >
+								Submit
+							</Button>
+						</Form>
+					</Formik>
+				</ModalBody>
+			</Modal>
+		</div>
+	)
 }
 
-function RenderComments({comments}) {
-
-
-    if (dish != null)
-      return (
-        <Card>
-          <h3>Comments</h3>
-          <div className="bg-[#f1eaea] text-[#89c3e4] p-2 h-[540px] leading-relaxed">
-            {dish.comments.map((item) => {
-              var date = new Date(item.date);
-              return (
-                <div key={item.id} className="font-semibold text-left mb-5">
-                  <CardText>{item.comment}</CardText>
-                  <span>
-                    By: <strong>{item.author}</strong>, {date.toDateString()}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      );
-    else return <div></div>;
-  }
-
-
-const  DishDetail = (props) => {
-
-
-    const menu = this.props.dishes.map((dish) => {
-      return (
-        <div className="col-12 col-md-5 m-1">
-          <Card key={dish.id} onClick={() => this.onDishSelect(dish)}>
-            <CardImg width="100%" src={dish.image} alt={dish.name} />
-            <CardImgOverlay>
-              <CardTitle>{dish.name}</CardTitle>
-            </CardImgOverlay>
-          </Card>
-        </div>
-      );
-    });
-
-    
-    return (
-      <div className="container">
-        <div className="row">{menu}</div>
-        <div className="row">
-          <div className="col-12 col-md-5 m-1">
-            {this.renderDish(this.state.selectedDish)}
-          </div>
-          <div className="col col-md">
-           {this.renderComments(this.state.selectedDish)}
-          </div>
-        </div>
-      </div>
-    )
-    ;
-  }
-export default DishDetail;
-
+export default DishDetail

@@ -1,25 +1,21 @@
-import React, {Component} from "react";
-import DishDetail from "./components/DishDetailComponent.js";
-import { DISHES } from './shared/dishes.js';
-import { Navbar, NavbarBrand } from 'reactstrap';
+import React from "react"
+import { BrowserRouter } from "react-router-dom"
+import { Provider } from "react-redux"
+import store from "./redux/store"
 
-import Main from './components/MainComponent';
-import { BrowserRouter } from 'react-router-dom';
-class App extends Component {
+import "./App.css";
+import Main from "./components/MainComponent";
 
-  render() {
-    return (
-      <BrowserRouter>
-      <div className="App">
-        <Main />
-      </div>
-    </BrowserRouter>
-
-      
-    );
-  }
+function App() {
+	return (
+		<Provider store={store}>
+			<BrowserRouter>
+				<div>
+					<Main />
+				</div>
+			</BrowserRouter>
+		</Provider>
+	)
 }
-
-
 
 export default App;
