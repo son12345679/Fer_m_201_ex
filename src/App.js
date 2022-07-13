@@ -4,14 +4,6 @@ import { DISHES } from './shared/dishes.js';
 import { Navbar, NavbarBrand } from 'reactstrap';
 
 class App extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      dishes: DISHES
-  };
-}
-
   render() {
     return (
       <div className="App">
@@ -20,11 +12,11 @@ class App extends Component {
             <NavbarBrand href="/">Ristorante Con Fusion</NavbarBrand>
           </div>
         </Navbar>
-        <DishDetail dishes={this.state.dishes} />
       </div>
     );
   }
 }
+
 
 
 export default App;
