@@ -15,6 +15,7 @@ class DishDetail extends Component {
     this.state = {
       selectedDish: null,
     };
+    
   }
 
   onDishSelect(dish) {
@@ -86,8 +87,10 @@ class DishDetail extends Component {
           </div>
         </div>
       </div>
-    );
+    )
+    ;
   }
+
   
 }
 

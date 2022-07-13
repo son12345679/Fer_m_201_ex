@@ -3,28 +3,19 @@ import DishDetail from "./components/DishDetailComponent.js";
 import { DISHES } from './shared/dishes.js';
 import { Navbar, NavbarBrand } from 'reactstrap';
 
-class App extends Component {
+import Main from './components/MainComponent';
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      dishes: DISHES
-  };
-}
+class App extends Component {
 
   render() {
     return (
       <div className="App">
-        <Navbar dark color="primary">
-          <div className="container">
-            <NavbarBrand href="/">Ristorante Con Fusion</NavbarBrand>
-          </div>
-        </Navbar>
-        <DishDetail dishes={this.state.dishes} />
+        <Main />
       </div>
     );
   }
 }
+
 
 
 export default App;
