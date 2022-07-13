@@ -92,7 +92,7 @@ export const DISHES =
         ]
         },
         {
-        id: 2,
+        id:2,
         name:'Vadonut',
         image: 'assets/images/vadonut.png',
         category: 'appetizer',
