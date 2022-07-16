@@ -9,6 +9,13 @@ import About from "./AboutComponent";
 import { Route, Routes, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchDishes } from "../redux/dishesSlice";
+import { addComment } from '../redux/ActionCreators'; 
+
+const mapDispatchToProps = dispatch => ({
+  
+  addComment: (dishId, rating, author, comment) => dispatch(addComment(dishId, rating, author, comment))
+
+});
 
 function Main() {
   const dishes = useSelector((state) => state.dishes.dishes);
@@ -24,14 +31,11 @@ function Main() {
   const DishWithId = () => {
     const { dishId } = useParams();
     return (
-      <DishDetail
-        selectedDish={
-          dishes.filter((dish) => dish.id === parseInt(dishId, 10))[0]
-        }
-        comments={comments.filter(
-          (comment) => comment.dishId === parseInt(dishId, 10)
-        )}
+      <DishDetail dish={this.props.dishes.filter((dish) => dish.id === parseInt(match.params.dishId,10))[0]}
+        comments={this.props.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId,10))}
+        addComment={this.props.addComment}
       />
+
     );
   };
 
@@ -69,4 +73,4 @@ function Main() {
   );
 }
 
-export default Main;
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
